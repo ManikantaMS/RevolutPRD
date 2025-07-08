@@ -74,14 +74,32 @@
       transition: var(--transition);
       animation: fadeIn 0.5s ease-out;
     }
-    /* Add improved UI layering */
+    /* Improved UI structure */
     .support-container {
       position: relative;
-      z-index: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      min-height: 90vh;
+      display: flex;
+      flex-direction: column;
     }
     
     .feedback-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
       z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(5px);
     }
     
     .agent-banner {
@@ -89,25 +107,40 @@
       top: 0;
       z-index: 100;
       background: white;
-      border-bottom: 1px solid #e2e8f0;
-      margin-bottom: 1rem;
-      padding: 0.5rem;
+      border-radius: 15px;
+      margin: 1rem 0;
+      padding: 1rem;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     }
     
     .always-human {
       position: fixed;
-      bottom: 20px;
-      right: 20px;
+      bottom: 2rem;
+      right: 2rem;
       z-index: 1000;
+      transform: translateZ(0);
     }
     
     .chat-log {
+      flex: 1;
       position: relative;
       z-index: 1;
       overflow-y: auto;
-      max-height: calc(100vh - 300px);
-      padding: 1rem;
+      height: calc(100vh - 400px);
+      min-height: 300px;
+      padding: 1.5rem;
       margin: 1rem 0;
+      background: #f8fafc;
+      border-radius: 15px;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    body {
+      background: #f0f5ff;
+      min-height: 100vh;
+      margin: 0;
+      padding: 1rem;
+      font-family: system-ui, -apple-system, sans-serif;
     }
     
     #namePrompt {
