@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Revolut Human-Centered Support Alpha</title>
+  <title>Revolut Customer Support</title>
   <style>
     :root {
       --primary-bg: #f7fafc;
@@ -287,7 +287,7 @@
 <body>
   <div class="support-container" id="supportContainer">
     <button class="calm-toggle" id="calmToggle" aria-label="Toggle Calm Mode">Calm Mode</button>
-    <div class="progress" id="progress">Step 1 of 2: Chat with Support</div>
+    <div class="progress" id="progress">Welcome to Revolut Customer Support</div>
     <!-- Add name prompt dialog -->
     <div id="namePrompt" class="call-back" style="display:none;">
       <label for="userName">Please enter your name:</label>
@@ -320,7 +320,7 @@
     </div>
     <div class="audit-trail" id="auditTrail" aria-label="Audit trail"></div>
   </div>
-  <button class="always-human" id="humanBtn">Speak to a Human</button>
+  <button class="always-human" id="humanBtn">Connect with Human Agent</button>
   <script>
     // Clear localStorage on page load
     localStorage.removeItem('revolut_support_history');
@@ -351,7 +351,7 @@
       // Initialize chat with personalized greeting
       history = [{
         type: 'agent',
-        text: `Hello ${name}! How can we help you today? If you need urgent help, just type or click "Speak to a Human".`,
+        text: `Welcome to Revolut Customer Support, ${name}! 👋\n\nI'm your AI support assistant. I can help you with general inquiries and basic support. If you need to speak with a human agent at any time, just click the "Speak to a Human" button below or type "human" in the chat.\n\nHow can I assist you today?`,
         time: Date.now()
       }];
       saveHistory(history);
@@ -442,7 +442,7 @@
       const name = userName.value.trim();
       history.push({
         type: 'agent',
-        text: `<b><span aria-label="Agent">You are now connected to <span style='color:#2563eb'>${agent.name}</span> (${agent.role})</span></b>. ETA: <b>${agent.eta}</b>. We're here to help you, ${name}.` + (reason ? `<br><span style='color:var(--danger)'>Escalated due to: "${reason}"</span>` : ''),
+        text: `Thank you for your patience, ${name}. I'm transferring you to our human support team.\n\n<b><span aria-label="Agent">You will be connected to <span style='color:#2563eb'>${agent.name}</span> (${agent.role})</span></b>. ETA: <b>${agent.eta}</b>.` + (reason ? `<br><span style='color:var(--danger)'>Escalated due to: "${reason}"</span>` : ''),
         time: Date.now(),
         escalated: true
       });
