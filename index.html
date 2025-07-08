@@ -6,26 +6,44 @@
   <title>Revolut Customer Support</title>
   <style>
     :root {
-      --primary-bg: #f7fafc;
+      --primary-bg: #f8fafc;
       --primary-txt: #1a202c;
       --accent: #2563eb;
+      --accent-light: #60a5fa;
       --calm-bg: #e3f6f5;
       --calm-txt: #22223b;
       --human-btn: #2563eb;
+      --human-btn-hover: #1d4ed8;
       --human-btn-txt: #fff;
       --danger: #b91c1c;
+      --success: #059669;
       --font-size: 18pt;
       --font-size-lg: 24pt;
       --border-radius: 18px;
-      --shadow: 0 4px 16px rgba(0,0,0,0.10);
+      --border-radius-sm: 12px;
+      --shadow: 0 8px 24px rgba(0,0,0,0.08);
+      --shadow-sm: 0 4px 12px rgba(0,0,0,0.05);
       --avatar-size: 48px;
       --focus-outline: 3px solid #ffb703;
       --calm-shadow: 0 0 0 4px #e3f6f5;
+      --transition: all 0.3s ease;
     }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(37,99,235,0.4); }
+      70% { box-shadow: 0 0 0 10px rgba(37,99,235,0); }
+      100% { box-shadow: 0 0 0 0 rgba(37,99,235,0); }
+    }
+
     body {
       background: var(--primary-bg);
       color: var(--primary-txt);
-      font-family: 'Segoe UI', Arial, sans-serif;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
       font-size: var(--font-size);
       margin: 0;
       min-height: 100vh;
@@ -33,7 +51,10 @@
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
-      background-image: radial-gradient(circle at 80% 10%, #e3f6f5 10%, transparent 70%), radial-gradient(circle at 10% 90%, #e0e7ef 10%, transparent 70%);
+      background-image: 
+        radial-gradient(circle at 90% 10%, rgba(227, 246, 245, 0.4) 0%, transparent 70%),
+        radial-gradient(circle at 10% 90%, rgba(224, 231, 239, 0.4) 0%, transparent 70%);
+      line-height: 1.6;
     }
     .calm-mode {
       background: var(--calm-bg);
@@ -43,14 +64,15 @@
     }
     .support-container {
       width: 100%;
-      max-width: 520px;
+      max-width: 580px;
       margin: 2rem auto;
       background: #fff;
       border-radius: var(--border-radius);
       box-shadow: var(--shadow);
       padding: 2.5rem 2rem 5rem 2rem;
       position: relative;
-      transition: box-shadow 0.2s;
+      transition: var(--transition);
+      animation: fadeIn 0.5s ease-out;
     }
     .always-human {
       position: fixed;
@@ -61,76 +83,132 @@
       font-size: var(--font-size);
       border: none;
       border-radius: 50px;
-      padding: 1rem 2.5rem 1rem 2.5rem;
+      padding: 1.2rem 2.8rem;
       box-shadow: var(--shadow);
       cursor: pointer;
       z-index: 1000;
-      transition: background 0.2s, box-shadow 0.2s;
+      transition: var(--transition);
       font-weight: bold;
       letter-spacing: 0.5px;
+      animation: pulse 2s infinite;
     }
-    .always-human:focus {
-      outline: var(--focus-outline);
+    .always-human:hover {
+      background: var(--human-btn-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(37,99,235,0.2);
     }
     .progress {
-      font-size: 1.1rem;
+      font-size: 1.2rem;
       color: var(--accent);
-      margin-bottom: 1.2rem;
+      margin-bottom: 1.5rem;
       font-weight: bold;
       letter-spacing: 0.5px;
+      text-align: center;
+      padding: 0.5rem 1rem;
+      background: rgba(37,99,235,0.05);
+      border-radius: var(--border-radius-sm);
     }
     .agent-banner {
       display: flex;
       align-items: center;
-      gap: 1rem;
-      background: #e3f6f5;
+      gap: 1.2rem;
+      background: linear-gradient(to right, #e3f6f5, #f0f9ff);
       border-radius: var(--border-radius);
-      padding: 1rem 1.5rem;
-      margin-bottom: 1.2rem;
-      box-shadow: 0 2px 8px rgba(37,99,235,0.08);
+      padding: 1.2rem 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow-sm);
       font-size: 1.1rem;
-      color: #2563eb;
+      color: var(--accent);
       font-weight: 500;
       min-height: 64px;
+      animation: fadeIn 0.5s ease-out;
+      border: 1px solid rgba(37,99,235,0.1);
     }
     .agent-avatar {
       width: var(--avatar-size);
       height: var(--avatar-size);
       border-radius: 50%;
       background: #fff;
-      border: 2px solid #2563eb;
+      border: 2px solid var(--accent);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 2rem;
+      font-size: 1.8rem;
       font-weight: bold;
-      color: #2563eb;
-      box-shadow: 0 2px 8px rgba(37,99,235,0.08);
+      color: var(--accent);
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
     }
     .chat-log {
-      min-height: 180px;
-      max-height: 260px;
+      min-height: 200px;
+      max-height: 320px;
       overflow-y: auto;
-      margin-bottom: 1rem;
+      margin-bottom: 1.2rem;
       border-radius: var(--border-radius);
-      background: #f1f5f9;
-      padding: 1rem;
+      background: #f8fafc;
+      padding: 1.2rem;
       font-size: 1.1rem;
+      border: 1px solid rgba(37,99,235,0.1);
+      scroll-behavior: smooth;
     }
     .chat-entry {
-      margin-bottom: 0.7rem;
-      line-height: 1.5;
+      margin-bottom: 1rem;
+      line-height: 1.6;
+      padding: 0.8rem 1.2rem;
+      border-radius: var(--border-radius-sm);
+      animation: fadeIn 0.3s ease-out;
+      max-width: 85%;
     }
     .chat-entry.agent {
       color: var(--accent);
       font-weight: 500;
+      background: rgba(37,99,235,0.05);
+      margin-right: auto;
+    }
+    .chat-entry.user {
+      background: var(--accent);
+      color: white;
+      margin-left: auto;
     }
     .chat-entry.escalated {
       color: var(--danger);
       font-weight: bold;
       background: #fff0f0;
-      border-radius: 8px;
-      padding: 0.5em 1em;
+      border-radius: var(--border-radius-sm);
+      padding: 1rem 1.2rem;
+      border-left: 4px solid var(--danger);
+      max-width: 100%;
+    }
+    #namePrompt {
+      background: white;
+      padding: 2rem;
+      border-radius: var(--border-radius);
+      text-align: center;
+      box-shadow: var(--shadow);
+      animation: fadeIn 0.5s ease-out;
+    }
+    #namePrompt label {
+      font-size: 1.3rem;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+      display: block;
+    }
+    #namePrompt .input-row {
+      max-width: 400px;
+      margin: 1.5rem auto;
+    }
+    #namePrompt input {
+      font-size: 1.2rem;
+      padding: 0.8rem 1.2rem;
+    }
+    #namePrompt button {
+      font-size: 1.2rem;
+      padding: 0.8rem 1.5rem;
+      transition: var(--transition);
+    }
+    #namePrompt button:hover {
+      background: var(--human-btn-hover);
+      transform: translateY(-2px);
     }
     .input-row {
       display: flex;
@@ -272,43 +350,81 @@
       outline: var(--focus-outline);
     }
     .callback-options {
-      margin-top: 1rem;
+      margin-top: 1.2rem;
+      background: white;
+      padding: 1.5rem;
+      border-radius: var(--border-radius-sm);
+      border: 1px solid rgba(37,99,235,0.1);
     }
     .instant-call {
       width: 100%;
-      background: var(--accent);
-      color: #fff;
+      background: var(--success);
+      color: white;
       border: none;
-      border-radius: 10px;
-      font-size: 1.1rem;
-      padding: 0.8rem 1.5rem;
+      border-radius: var(--border-radius-sm);
+      font-size: 1.2rem;
+      padding: 1rem 2rem;
       cursor: pointer;
       font-weight: bold;
-      margin-bottom: 1rem;
+      margin-bottom: 1.2rem;
+      transition: var(--transition);
+      box-shadow: var(--shadow-sm);
+    }
+    .instant-call:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(5,150,105,0.2);
     }
     .or-divider {
       text-align: center;
-      margin: 1rem 0;
+      margin: 1.2rem 0;
       color: #64748b;
       font-weight: 500;
+      position: relative;
     }
+    .or-divider::before,
+    .or-divider::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: 45%;
+      height: 1px;
+      background: rgba(100,116,139,0.2);
+    }
+    .or-divider::before { left: 0; }
+    .or-divider::after { right: 0; }
     .callback-note {
-      margin-top: 1rem;
-      font-size: 0.9rem;
+      margin-top: 1.2rem;
+      font-size: 1rem;
       color: #64748b;
+      padding: 0.8rem 1rem;
+      background: rgba(100,116,139,0.05);
+      border-radius: var(--border-radius-sm);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .callback-note::before {
+      content: '🔒';
+      font-size: 1.2rem;
     }
     .export-button {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      background: #f1f5f9;
+      gap: 0.8rem;
+      background: white;
       color: var(--accent);
-      border: none;
-      border-radius: 8px;
-      padding: 0.5rem 1rem;
-      font-size: 0.9rem;
+      border: 1px solid rgba(37,99,235,0.2);
+      border-radius: var(--border-radius-sm);
+      padding: 0.8rem 1.2rem;
+      font-size: 1rem;
       cursor: pointer;
-      margin-top: 0.5rem;
+      margin-top: 1rem;
+      transition: var(--transition);
+      font-weight: 500;
+    }
+    .export-button:hover {
+      background: rgba(37,99,235,0.05);
+      border-color: var(--accent);
     }
     @media (max-width: 600px) {
       .support-container {
@@ -470,6 +586,7 @@
       chatLog.innerHTML = history.map(entry => {
         let cls = 'chat-entry';
         if (entry.type === 'agent') cls += ' agent';
+        if (entry.type === 'user') cls += ' user';
         if (entry.escalated) cls += ' escalated';
         return `<div class="${cls}">${renderGlossary(entry.text)}</div>`;
       }).join('');
