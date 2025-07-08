@@ -271,6 +271,45 @@
     .call-back button:focus {
       outline: var(--focus-outline);
     }
+    .callback-options {
+      margin-top: 1rem;
+    }
+    .instant-call {
+      width: 100%;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      padding: 0.8rem 1.5rem;
+      cursor: pointer;
+      font-weight: bold;
+      margin-bottom: 1rem;
+    }
+    .or-divider {
+      text-align: center;
+      margin: 1rem 0;
+      color: #64748b;
+      font-weight: 500;
+    }
+    .callback-note {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      color: #64748b;
+    }
+    .export-button {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #f1f5f9;
+      color: var(--accent);
+      border: none;
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+      cursor: pointer;
+      margin-top: 0.5rem;
+    }
     @media (max-width: 600px) {
       .support-container {
         padding: 1rem 0.5rem 5rem 0.5rem;
@@ -310,15 +349,29 @@
       <button type="submit">Send</button>
     </form>
     <div class="call-back" id="callBack">
-      <label for="timeSlot">Prefer a call? Select a time slot:</label>
-      <select id="timeSlot" aria-label="Select a time slot">
-        <option value="09:00-09:30">09:00–09:30</option>
-        <option value="10:00-10:30">10:00–10:30</option>
-        <option value="11:00-11:30">11:00–11:30</option>
-      </select>
-      <button id="callMeBackBtn" type="button">Call Me Back</button>
+      <label for="callbackType">How would you like us to call you?</label>
+      <div class="callback-options">
+        <button id="instantCallBtn" type="button" class="instant-call">Call Me Now</button>
+        <div class="or-divider">or</div>
+        <div>
+          <label for="timeSlot">Schedule for later:</label>
+          <select id="timeSlot" aria-label="Select a time slot">
+            <option value="09:00-09:30">09:00–09:30</option>
+            <option value="10:00-10:30">10:00–10:30</option>
+            <option value="11:00-11:30">11:00–11:30</option>
+          </select>
+          <button id="callMeBackBtn" type="button">Schedule Call</button>
+        </div>
+      </div>
+      <div class="callback-note">
+        All callbacks are handled by verified Revolut support specialists
+      </div>
     </div>
-    <div class="audit-trail" id="auditTrail" aria-label="Audit trail"></div>
+    <div class="audit-trail" id="auditTrail" aria-label="Audit trail">
+      <button class="export-button" id="exportBtn" title="Download chat history">
+        📥 Export Chat History
+      </button>
+    </div>
   </div>
   <button class="always-human" id="humanBtn">Connect with Human Agent</button>
   <script>
@@ -442,7 +495,7 @@
       const name = userName.value.trim();
       history.push({
         type: 'agent',
-        text: `Thank you for your patience, ${name}. I'm transferring you to our human support team.\n\n<b><span aria-label="Agent">You will be connected to <span style='color:#2563eb'>${agent.name}</span> (${agent.role})</span></b>. ETA: <b>${agent.eta}</b>.` + (reason ? `<br><span style='color:var(--danger)'>Escalated due to: "${reason}"</span>` : ''),
+        text: `Thank you for your patience, ${name}. A real person is reviewing this now.\n\n<b><span aria-label="Agent">You will be connected to <span style='color:#2563eb'>${agent.name}</span> (${agent.role})</span></b>. ETA: <b>${agent.eta}</b>.\n\nWe understand this might be concerning, and we're here to help. Your case is our priority.` + (reason ? `<br><span style='color:var(--danger)'>Escalated due to: "${reason}"</span>` : ''),
         time: Date.now(),
         escalated: true
       });
@@ -501,6 +554,38 @@
       history.push({
         type: 'agent',
         text: `We’ll call you back at your chosen time slot: <b>${slot}</b>.`,
+        time: Date.now()
+      });
+      saveHistory(history);
+      renderChat(history);
+      renderAudit(history);
+    });
+
+    // Export chat history
+    document.getElementById('exportBtn').addEventListener('click', () => {
+      const history = loadHistory();
+      const exportData = history.map(entry => {
+        const time = new Date(entry.time).toLocaleString();
+        return `[${time}] ${entry.type === 'user' ? 'You' : 'Support'}: ${entry.text}`;
+      }).join('\n');
+      
+      const blob = new Blob([exportData], { type: 'text/plain' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'revolut-chat-history.txt';
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    });
+
+    // Instant callback handler
+    document.getElementById('instantCallBtn').addEventListener('click', () => {
+      const name = userName.value.trim();
+      history.push({
+        type: 'agent',
+        text: `We're initiating an immediate callback to you now. One of our verified support specialists will call you within the next 5 minutes.`,
         time: Date.now()
       });
       saveHistory(history);
