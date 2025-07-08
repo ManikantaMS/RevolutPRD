@@ -683,10 +683,10 @@
       });
       namePrompt.style.display = 'none';
       
-      // Initialize chat with personalized greeting
+      // Initialize chat with personalized banking-focused greeting
       history = [{
         type: 'agent',
-        text: `Hello ${name}, I'm here to help you today. 👋\n\nI want you to know that you can reach a human support specialist at any time by clicking the blue "Connect with Human Agent" button below. I'll do my best to assist you, and I'll make sure you're connected to the right person if needed.\n\nWhat would you like help with?`,
+        text: `Hello ${name}, welcome to Revolut Customer Support! 👋\n\nI can help you with:\n• Account issues\n• Card payments\n• International transfers\n• Security concerns\n• App troubleshooting\n\nYou can reach a human specialist anytime by clicking the blue "Connect with Human Agent" button below. What would you like help with today?`,
         time: Date.now()
       }];
       saveHistory(history);
@@ -694,11 +694,18 @@
       renderAudit(history);
     });
 
-    // Glossary terms
+    // Banking-specific glossary terms
     const glossary = {
-      'chargeback': 'A chargeback is a refund initiated by your bank for a disputed transaction.',
-      'scam': 'A scam is a fraudulent scheme to steal money or information.',
-      'escalate': 'To escalate means to transfer your case to a human support agent.'
+      'chargeback': 'A refund initiated by your bank for a disputed transaction',
+      'scam': 'A fraudulent scheme to steal money or information',
+      'escalate': 'Transfer your case to a human support agent',
+      'SEPA': 'Single Euro Payments Area - for European transfers',
+      'SWIFT': 'International bank transfer system',
+      'interchange': 'Fee charged for card transactions between banks',
+      'metal card': 'Revolut\'s premium metal card with exclusive benefits',
+      'PIN': 'Personal Identification Number for card security',
+      'exchange rate': 'The rate at which one currency converts to another',
+      'freeze card': 'Temporarily disable your card for security'
     };
 
     // Calm mode toggle
@@ -718,13 +725,17 @@
     const callMeBackBtn = document.getElementById('callMeBackBtn');
     const timeSlot = document.getElementById('timeSlot');
 
-    // Distress keywords for NLP simulation
-    const distressWords = ['scam', 'panic', 'not working', 'fraud', 'stolen', 'emergency'];
+    // Banking and distress keywords for NLP simulation
+    const distressWords = [
+      'scam', 'panic', 'not working', 'fraud', 'stolen', 'emergency',
+      'unauthorized', 'transaction', 'missing money', 'wrong transfer',
+      'account blocked', 'payment failed', 'card declined', 'urgent transfer'
+    ];
 
     // Agent details
     const agent = {
       name: 'Sarah Murphy',
-      role: 'Senior Support Specialist',
+      role: 'Senior Banking Specialist',
       eta: '2 minutes'
     };
 
@@ -908,7 +919,7 @@
 
     // Exit chat and feedback handling
     const exitChat = document.getElementById('exitChat');
-    const feedbackModal = document.getElementById('feedbackModal');
+    // feedbackModal already declared above
     const cancelFeedback = document.getElementById('cancelFeedback');
     const submitFeedback = document.getElementById('submitFeedback');
     const emailInput = document.getElementById('emailInput');
