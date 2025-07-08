@@ -426,6 +426,114 @@
       background: rgba(37,99,235,0.05);
       border-color: var(--accent);
     }
+    .exit-chat {
+      position: absolute;
+      top: 1.5rem;
+      left: 1.5rem;
+      background: #f1f5f9;
+      color: #64748b;
+      border: none;
+      border-radius: 50px;
+      font-size: 1.1rem;
+      padding: 0.7rem 1.5rem;
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+      font-weight: 500;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .exit-chat:hover {
+      background: #e2e8f0;
+      color: var(--danger);
+    }
+
+    .feedback-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    .feedback-content {
+      background: white;
+      padding: 2rem;
+      border-radius: var(--border-radius);
+      width: 90%;
+      max-width: 500px;
+      box-shadow: var(--shadow);
+    }
+
+    .feedback-content h2 {
+      margin-top: 0;
+      color: var(--accent);
+    }
+
+    .rating-buttons {
+      display: flex;
+      gap: 1rem;
+      margin: 1.5rem 0;
+      justify-content: center;
+    }
+
+    .rating-btn {
+      border: none;
+      background: #f1f5f9;
+      padding: 1rem;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: var(--transition);
+      font-size: 1.5rem;
+    }
+
+    .rating-btn:hover {
+      transform: scale(1.1);
+      background: #e2e8f0;
+    }
+
+    .email-input {
+      width: 100%;
+      margin: 1rem 0;
+      padding: 0.8rem;
+      border: 2px solid #cbd5e1;
+      border-radius: var(--border-radius-sm);
+      font-size: 1rem;
+    }
+
+    .feedback-actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .feedback-actions button {
+      flex: 1;
+      padding: 0.8rem;
+      border: none;
+      border-radius: var(--border-radius-sm);
+      cursor: pointer;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+
+    .submit-feedback {
+      background: var(--accent);
+      color: white;
+    }
+
+    .cancel-feedback {
+      background: #f1f5f9;
+      color: #64748b;
+    }
     @media (max-width: 600px) {
       .support-container {
         padding: 1rem 0.5rem 5rem 0.5rem;
@@ -441,8 +549,29 @@
 </head>
 <body>
   <div class="support-container" id="supportContainer">
+    <button class="exit-chat" id="exitChat">🚪 Exit Chat</button>
     <button class="calm-toggle" id="calmToggle" aria-label="Toggle Calm Mode">Calm Mode</button>
     <div class="progress" id="progress">Welcome to Revolut Customer Support</div>
+
+    <div class="feedback-modal" id="feedbackModal">
+      <div class="feedback-content">
+        <h2>Before You Go</h2>
+        <p>How was your experience with our support today?</p>
+        <div class="rating-buttons">
+          <button class="rating-btn" data-rating="1">😞</button>
+          <button class="rating-btn" data-rating="2">😐</button>
+          <button class="rating-btn" data-rating="3">🙂</button>
+          <button class="rating-btn" data-rating="4">😊</button>
+          <button class="rating-btn" data-rating="5">😍</button>
+        </div>
+        <p>Would you like to receive a chat summary via email?</p>
+        <input type="email" class="email-input" id="emailInput" placeholder="Enter your email (optional)" />
+        <div class="feedback-actions">
+          <button class="cancel-feedback" id="cancelFeedback">Cancel</button>
+          <button class="submit-feedback" id="submitFeedback">Submit & Exit</button>
+        </div>
+      </div>
+    </div>
     <!-- Add name prompt dialog -->
     <div id="namePrompt" class="call-back" style="display:none;">
       <label for="userName">Please enter your name:</label>
@@ -488,8 +617,29 @@
         📥 Export Chat History
       </button>
     </div>
+    <button class="exit-chat" id="exitChatBtn" aria-label="Exit Chat">
+      🚪 Exit Chat
+    </button>
   </div>
   <button class="always-human" id="humanBtn">Connect with Human Agent</button>
+  <div class="feedback-modal" id="feedbackModal">
+    <div class="feedback-content">
+      <h2>Feedback</h2>
+      <p>We value your feedback! Please let us know how we did today.</p>
+      <div class="rating-buttons">
+        <button class="rating-btn" data-rating="1">⭐</button>
+        <button class="rating-btn" data-rating="2">⭐</button>
+        <button class="rating-btn" data-rating="3">⭐</button>
+        <button class="rating-btn" data-rating="4">⭐</button>
+        <button class="rating-btn" data-rating="5">⭐</button>
+      </div>
+      <input type="email" class="email-input" id="feedbackEmail" placeholder="Your email (optional)" aria-label="Your email" />
+      <div class="feedback-actions">
+        <button class="submit-feedback" id="submitFeedbackBtn">Submit Feedback</button>
+        <button class="cancel-feedback" id="cancelFeedbackBtn">Cancel</button>
+      </div>
+    </div>
+  </div>
   <script>
     // Clear localStorage on page load
     localStorage.removeItem('revolut_support_history');
@@ -499,6 +649,12 @@
     const userName = document.getElementById('userName');
     const submitName = document.getElementById('submitName');
     const supportContainer = document.getElementById('supportContainer');
+    const exitChatBtn = document.getElementById('exitChatBtn');
+    const feedbackModal = document.getElementById('feedbackModal');
+    const submitFeedbackBtn = document.getElementById('submitFeedbackBtn');
+    const cancelFeedbackBtn = document.getElementById('cancelFeedbackBtn');
+    const ratingBtns = document.querySelectorAll('.rating-btn');
+    const feedbackEmail = document.getElementById('feedbackEmail');
     
     // Show name prompt first, hide other elements
     document.querySelectorAll('#chatForm, #callBack, #auditTrail, #humanBtn, #agentBanner').forEach(el => {
@@ -631,11 +787,8 @@
     // Initial load
     let history = loadHistory();
     if (history.length === 0) {
-      history = [{
-        type: 'agent',
-        text: 'Hello Margaret! How can we help you today? If you need urgent help, just type or click "Speak to a Human".',
-        time: Date.now()
-      }];
+      // Don't initialize with any messages, wait for name input
+      history = [];
       saveHistory(history);
     }
     // Show agent banner if last message is escalated
@@ -741,6 +894,40 @@
         namePrompt.style.display = 'block';
       }
     });
-  </script>
-</body>
-</html>
+
+    // Exit chat and feedback handling
+    const exitChat = document.getElementById('exitChat');
+    const feedbackModal = document.getElementById('feedbackModal');
+    const cancelFeedback = document.getElementById('cancelFeedback');
+    const submitFeedback = document.getElementById('submitFeedback');
+    const emailInput = document.getElementById('emailInput');
+    let selectedRating = 0;
+
+    exitChat.addEventListener('click', () => {
+      feedbackModal.style.display = 'flex';
+    });
+
+    cancelFeedback.addEventListener('click', () => {
+      feedbackModal.style.display = 'none';
+    });
+
+    document.querySelectorAll('.rating-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.rating-btn').forEach(b => b.style.background = '#f1f5f9');
+        e.target.style.background = '#e3f6f5';
+        selectedRating = parseInt(e.target.dataset.rating);
+      });
+    });
+
+    submitFeedback.addEventListener('click', () => {
+      const email = emailInput.value.trim();
+      const history = loadHistory();
+      
+      // Add feedback to chat history
+      history.push({
+        type: 'agent',
+        text: '🎯 Chat ended. Thank you for your feedback!',
+        time: Date.now()
+      });
+      
+      if
