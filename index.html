@@ -288,6 +288,14 @@
   <div class="support-container" id="supportContainer">
     <button class="calm-toggle" id="calmToggle" aria-label="Toggle Calm Mode">Calm Mode</button>
     <div class="progress" id="progress">Step 1 of 2: Chat with Support</div>
+    <!-- Add name prompt dialog -->
+    <div id="namePrompt" class="call-back" style="display:none;">
+      <label for="userName">Please enter your name:</label>
+      <div class="input-row">
+        <input type="text" id="userName" required />
+        <button type="button" id="submitName">Start Chat</button>
+      </div>
+    </div>
     <div class="agent-banner" id="agentBanner" style="display:none">
       <div class="agent-avatar" aria-hidden="true">SM</div>
       <div>
@@ -314,6 +322,43 @@
   </div>
   <button class="always-human" id="humanBtn">Speak to a Human</button>
   <script>
+    // Clear localStorage on page load
+    localStorage.removeItem('revolut_support_history');
+    
+    // Get DOM elements
+    const namePrompt = document.getElementById('namePrompt');
+    const userName = document.getElementById('userName');
+    const submitName = document.getElementById('submitName');
+    const supportContainer = document.getElementById('supportContainer');
+    
+    // Show name prompt first, hide other elements
+    document.querySelectorAll('#chatForm, #callBack, #auditTrail, #humanBtn, #agentBanner').forEach(el => {
+      el.style.display = 'none';
+    });
+    namePrompt.style.display = 'block';
+    
+    // Handle name submission
+    submitName.addEventListener('click', () => {
+      const name = userName.value.trim();
+      if (!name) return;
+      
+      // Show chat interface
+      document.querySelectorAll('#chatForm, #callBack, #auditTrail, #humanBtn').forEach(el => {
+        el.style.display = '';
+      });
+      namePrompt.style.display = 'none';
+      
+      // Initialize chat with personalized greeting
+      history = [{
+        type: 'agent',
+        text: `Hello ${name}! How can we help you today? If you need urgent help, just type or click "Speak to a Human".`,
+        time: Date.now()
+      }];
+      saveHistory(history);
+      renderChat(history);
+      renderAudit(history);
+    });
+
     // Glossary terms
     const glossary = {
       'chargeback': 'A chargeback is a refund initiated by your bank for a disputed transaction.',
@@ -394,9 +439,10 @@
     // Escalate to human
     function escalate(history, reason) {
       showAgentBanner(true);
+      const name = userName.value.trim();
       history.push({
         type: 'agent',
-        text: `<b><span aria-label="Agent">You are now connected to <span style='color:#2563eb'>${agent.name}</span> (${agent.role})</span></b>. ETA: <b>${agent.eta}</b>. We’re here to help you, Margaret.` + (reason ? `<br><span style='color:var(--danger)'>Escalated due to: "${reason}"</span>` : ''),
+        text: `<b><span aria-label="Agent">You are now connected to <span style='color:#2563eb'>${agent.name}</span> (${agent.role})</span></b>. ETA: <b>${agent.eta}</b>. We're here to help you, ${name}.` + (reason ? `<br><span style='color:var(--danger)'>Escalated due to: "${reason}"</span>` : ''),
         time: Date.now(),
         escalated: true
       });
@@ -460,6 +506,38 @@
       saveHistory(history);
       renderChat(history);
       renderAudit(history);
+    });
+
+    // Submit name and start chat
+    submitName.addEventListener('click', () => {
+      const name = userName.value.trim();
+      if (!name) return;
+      // Update agent message with user name
+      const welcomeMessage = `Hello ${name}! How can we help you today? If you need urgent help, just type or click "Speak to a Human".`;
+      let history = loadHistory();
+      history.push({ type: 'agent', text: welcomeMessage, time: Date.now() });
+      saveHistory(history);
+      renderChat(history);
+      renderAudit(history);
+      // Hide name prompt and show chat
+      namePrompt.style.display = 'none';
+      document.getElementById('agentBanner').style.display = 'none';
+      document.getElementById('progress').style.display = 'block';
+      document.getElementById('chatForm').style.display = 'flex';
+      document.getElementById('callBack').style.display = 'block';
+    });
+
+    // Show name prompt on initial load
+    window.addEventListener('load', () => {
+      // Check if user name is already saved
+      const savedName = localStorage.getItem('revolut_user_name');
+      if (savedName) {
+        userName.value = savedName;
+        // Automatically start chat if name is saved
+        submitName.click();
+      } else {
+        namePrompt.style.display = 'block';
+      }
     });
   </script>
 </body>
