@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Revolut Human-Centered Support Alpha</title>
+  <style>
+    :root {
+      --primary-bg: #f7fafc;
+      --primary-txt: #1a202c;
+      --accent: #2563eb;
+      --calm-bg: #e3f6f5;
+      --calm-txt: #22223b;
+      --human-btn: #2563eb;
+      --human-btn-txt: #fff;
+      --danger: #b91c1c;
+      --font-size: 18pt;
+      --font-size-lg: 24pt;
+      --border-radius: 18px;
+      --shadow: 0 4px 16px rgba(0,0,0,0.10);
+      --avatar-size: 48px;
+      --focus-outline: 3px solid #ffb703;
+      --calm-shadow: 0 0 0 4px #e3f6f5;
+    }
+    body {
+      background: var(--primary-bg);
+      color: var(--primary-txt);
+      font-family: 'Segoe UI', Arial, sans-serif;
+      font-size: var(--font-size);
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      background-image: radial-gradient(circle at 80% 10%, #e3f6f5 10%, transparent 70%), radial-gradient(circle at 10% 90%, #e0e7ef 10%, transparent 70%);
+    }
+    .calm-mode {
+      background: var(--calm-bg);
+      color: var(--calm-txt);
+      font-size: var(--font-size-lg);
+      box-shadow: var(--calm-shadow);
+    }
+    .support-container {
+      width: 100%;
+      max-width: 520px;
+      margin: 2rem auto;
+      background: #fff;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      padding: 2.5rem 2rem 5rem 2rem;
+      position: relative;
+      transition: box-shadow 0.2s;
+    }
+    .always-human {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      background: var(--human-btn);
+      color: var(--human-btn-txt);
+      font-size: var(--font-size);
+      border: none;
+      border-radius: 50px;
+      padding: 1rem 2.5rem 1rem 2.5rem;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      z-index: 1000;
+      transition: background 0.2s, box-shadow 0.2s;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+    }
+    .always-human:focus {
+      outline: var(--focus-outline);
+    }
+    .progress {
+      font-size: 1.1rem;
+      color: var(--accent);
+      margin-bottom: 1.2rem;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+    }
+    .agent-banner {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: #e3f6f5;
+      border-radius: var(--border-radius);
+      padding: 1rem 1.5rem;
+      margin-bottom: 1.2rem;
+      box-shadow: 0 2px 8px rgba(37,99,235,0.08);
+      font-size: 1.1rem;
+      color: #2563eb;
+      font-weight: 500;
+      min-height: 64px;
+    }
+    .agent-avatar {
+      width: var(--avatar-size);
+      height: var(--avatar-size);
+      border-radius: 50%;
+      background: #fff;
+      border: 2px solid #2563eb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: bold;
+      color: #2563eb;
+      box-shadow: 0 2px 8px rgba(37,99,235,0.08);
+    }
+    .chat-log {
+      min-height: 180px;
+      max-height: 260px;
+      overflow-y: auto;
+      margin-bottom: 1rem;
+      border-radius: var(--border-radius);
+      background: #f1f5f9;
+      padding: 1rem;
+      font-size: 1.1rem;
+    }
+    .chat-entry {
+      margin-bottom: 0.7rem;
+      line-height: 1.5;
+    }
+    .chat-entry.agent {
+      color: var(--accent);
+      font-weight: 500;
+    }
+    .chat-entry.escalated {
+      color: var(--danger);
+      font-weight: bold;
+      background: #fff0f0;
+      border-radius: 8px;
+      padding: 0.5em 1em;
+    }
+    .input-row {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    .input-row input, .input-row textarea {
+      flex: 1;
+      font-size: var(--font-size);
+      border-radius: var(--border-radius);
+      border: 2px solid #cbd5e1;
+      padding: 0.5rem 1rem;
+      background: #f8fafc;
+      transition: border 0.2s;
+    }
+    .input-row input:focus, .input-row textarea:focus {
+      border: 2px solid #2563eb;
+      outline: var(--focus-outline);
+    }
+    .input-row button {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: var(--border-radius);
+      font-size: var(--font-size);
+      padding: 0.5rem 1.5rem;
+      cursor: pointer;
+      transition: background 0.2s, box-shadow 0.2s;
+      font-weight: bold;
+      box-shadow: 0 2px 8px rgba(37,99,235,0.08);
+    }
+    .input-row button:focus {
+      outline: var(--focus-outline);
+    }
+    .audit-trail {
+      font-size: 1rem;
+      background: #f8fafc;
+      border-radius: var(--border-radius);
+      padding: 1rem;
+      margin-top: 1.5rem;
+      box-shadow: var(--shadow);
+      color: #22223b;
+    }
+    .glossary {
+      border-bottom: 2px dotted var(--accent);
+      cursor: help;
+      position: relative;
+      color: #2563eb;
+      font-weight: 500;
+      padding-right: 1.2em;
+    }
+    .glossary:after {
+      content: "?";
+      font-size: 0.9em;
+      color: #2563eb;
+      background: #e3f6f5;
+      border-radius: 50%;
+      padding: 0.1em 0.4em;
+      margin-left: 0.2em;
+      vertical-align: middle;
+      font-weight: bold;
+    }
+    .glossary-tooltip {
+      display: none;
+      position: absolute;
+      left: 0;
+      top: 2.2em;
+      background: #fff;
+      color: #22223b;
+      border: 2px solid #2563eb;
+      border-radius: 10px;
+      padding: 0.7em 1.2em;
+      font-size: 1rem;
+      z-index: 10;
+      min-width: 200px;
+      box-shadow: 0 2px 8px rgba(37,99,235,0.08);
+    }
+    .glossary:hover .glossary-tooltip, .glossary:focus .glossary-tooltip {
+      display: block;
+    }
+    .calm-toggle {
+      position: absolute;
+      top: 1.5rem;
+      right: 1.5rem;
+      background: #e0e7ef;
+      color: #22223b;
+      border: none;
+      border-radius: 50px;
+      font-size: 1.1rem;
+      padding: 0.7rem 1.5rem;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+      font-weight: bold;
+      letter-spacing: 0.5px;
+      transition: background 0.2s;
+    }
+    .calm-toggle:focus {
+      outline: var(--focus-outline);
+    }
+    .call-back {
+      margin: 1.2rem 0;
+      padding: 1.2rem;
+      background: #f1f5f9;
+      border-radius: var(--border-radius);
+      box-shadow: 0 2px 8px rgba(37,99,235,0.08);
+    }
+    .call-back label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+    .call-back select {
+      font-size: 1.1rem;
+      border-radius: 10px;
+      padding: 0.3rem 1rem;
+      margin-bottom: 0.5rem;
+      border: 2px solid #cbd5e1;
+      background: #fff;
+      transition: border 0.2s;
+    }
+    .call-back select:focus {
+      border: 2px solid #2563eb;
+      outline: var(--focus-outline);
+    }
+    .call-back button {
+      margin-top: 0.5rem;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      padding: 0.5rem 1.5rem;
+      cursor: pointer;
+      font-weight: bold;
+      box-shadow: 0 2px 8px rgba(37,99,235,0.08);
+      transition: background 0.2s;
+    }
+    .call-back button:focus {
+      outline: var(--focus-outline);
+    }
+    @media (max-width: 600px) {
+      .support-container {
+        padding: 1rem 0.5rem 5rem 0.5rem;
+      }
+      .always-human {
+        right: 0.5rem;
+        left: 0.5rem;
+        width: calc(100vw - 1rem);
+        border-radius: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="support-container" id="supportContainer">
+    <button class="calm-toggle" id="calmToggle" aria-label="Toggle Calm Mode">Calm Mode</button>
+    <div class="progress" id="progress">Step 1 of 2: Chat with Support</div>
+    <div class="agent-banner" id="agentBanner" style="display:none">
+      <div class="agent-avatar" aria-hidden="true">SM</div>
+      <div>
+        <span id="agentName">Sarah Murphy</span><br>
+        <span style="font-size:0.95em; color:#22223b;">Senior Support Specialist</span><br>
+        <span style="font-size:0.95em; color:#2563eb;">ETA: <span id="agentEta">2 minutes</span></span>
+      </div>
+    </div>
+    <div class="chat-log" id="chatLog" aria-live="polite"></div>
+    <form class="input-row" id="chatForm" autocomplete="off">
+      <input type="text" id="userInput" placeholder="Type your message…" aria-label="Type your message" required />
+      <button type="submit">Send</button>
+    </form>
+    <div class="call-back" id="callBack">
+      <label for="timeSlot">Prefer a call? Select a time slot:</label>
+      <select id="timeSlot" aria-label="Select a time slot">
+        <option value="09:00-09:30">09:00–09:30</option>
+        <option value="10:00-10:30">10:00–10:30</option>
+        <option value="11:00-11:30">11:00–11:30</option>
+      </select>
+      <button id="callMeBackBtn" type="button">Call Me Back</button>
+    </div>
+    <div class="audit-trail" id="auditTrail" aria-label="Audit trail"></div>
+  </div>
+  <button class="always-human" id="humanBtn">Speak to a Human</button>
+  <script>
+    // Glossary terms
+    const glossary = {
+      'chargeback': 'A chargeback is a refund initiated by your bank for a disputed transaction.',
+      'scam': 'A scam is a fraudulent scheme to steal money or information.',
+      'escalate': 'To escalate means to transfer your case to a human support agent.'
+    };
+
+    // Calm mode toggle
+    const calmToggle = document.getElementById('calmToggle');
+    calmToggle.addEventListener('click', () => {
+      document.body.classList.toggle('calm-mode');
+      calmToggle.textContent = document.body.classList.contains('calm-mode') ? 'Normal Mode' : 'Calm Mode';
+    });
+
+    // Chat and escalation logic
+    const chatLog = document.getElementById('chatLog');
+    const chatForm = document.getElementById('chatForm');
+    const userInput = document.getElementById('userInput');
+    const auditTrail = document.getElementById('auditTrail');
+    const progress = document.getElementById('progress');
+    const humanBtn = document.getElementById('humanBtn');
+    const callMeBackBtn = document.getElementById('callMeBackBtn');
+    const timeSlot = document.getElementById('timeSlot');
+
+    // Distress keywords for NLP simulation
+    const distressWords = ['scam', 'panic', 'not working', 'fraud', 'stolen', 'emergency'];
+
+    // Agent details
+    const agent = {
+      name: 'Sarah Murphy',
+      role: 'Senior Support Specialist',
+      eta: '2 minutes'
+    };
+
+    // LocalStorage chat history
+    function saveHistory(history) {
+      localStorage.setItem('revolut_support_history', JSON.stringify(history));
+    }
+    function loadHistory() {
+      return JSON.parse(localStorage.getItem('revolut_support_history') || '[]');
+    }
+
+    // Render glossary tooltips
+    function renderGlossary(text) {
+      return text.replace(/\b(chargeback|scam|escalate)\b/gi, (match) => {
+        const key = match.toLowerCase();
+        if (glossary[key]) {
+          return `<span class="glossary" tabindex="0">${match}<span class="glossary-tooltip">${glossary[key]}</span></span>`;
+        }
+        return match;
+      });
+    }
+
+    // Render chat log
+    function renderChat(history) {
+      chatLog.innerHTML = history.map(entry => {
+        let cls = 'chat-entry';
+        if (entry.type === 'agent') cls += ' agent';
+        if (entry.escalated) cls += ' escalated';
+        return `<div class="${cls}">${renderGlossary(entry.text)}</div>`;
+      }).join('');
+      chatLog.scrollTop = chatLog.scrollHeight;
+    }
+
+    // Render audit trail
+    function renderAudit(history) {
+      auditTrail.innerHTML = history.map(entry => {
+        const time = new Date(entry.time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        return `<div>[${time}] ${entry.type === 'user' ? 'You' : 'Support'}: ${entry.text}</div>`;
+      }).join('');
+    }
+
+    // Show agent banner
+    function showAgentBanner(show = true) {
+      document.getElementById('agentBanner').style.display = show ? '' : 'none';
+    }
+
+    // Escalate to human
+    function escalate(history, reason) {
+      showAgentBanner(true);
+      history.push({
+        type: 'agent',
+        text: `<b><span aria-label="Agent">You are now connected to <span style='color:#2563eb'>${agent.name}</span> (${agent.role})</span></b>. ETA: <b>${agent.eta}</b>. We’re here to help you, Margaret.` + (reason ? `<br><span style='color:var(--danger)'>Escalated due to: "${reason}"</span>` : ''),
+        time: Date.now(),
+        escalated: true
+      });
+      progress.textContent = 'Step 2 of 2: Human Support';
+      saveHistory(history);
+      renderChat(history);
+      renderAudit(history);
+    }
+
+    // NLP simulation for distress
+    function checkDistress(text) {
+      const found = distressWords.find(word => text.toLowerCase().includes(word));
+      return found || null;
+    }
+
+    // Initial load
+    let history = loadHistory();
+    if (history.length === 0) {
+      history = [{
+        type: 'agent',
+        text: 'Hello Margaret! How can we help you today? If you need urgent help, just type or click "Speak to a Human".',
+        time: Date.now()
+      }];
+      saveHistory(history);
+    }
+    // Show agent banner if last message is escalated
+    if (history.some(h => h.escalated)) showAgentBanner(true);
+    renderChat(history);
+    renderAudit(history);
+
+    // Chat form submit
+    chatForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const text = userInput.value.trim();
+      if (!text) return;
+      history.push({ type: 'user', text, time: Date.now() });
+      saveHistory(history);
+      renderChat(history);
+      renderAudit(history);
+      userInput.value = '';
+      // NLP escalation
+      const distress = checkDistress(text);
+      if (distress) {
+        escalate(history, distress);
+      }
+    });
+
+    // Always-visible human button
+    humanBtn.addEventListener('click', () => {
+      escalate(history);
+    });
+
+    // Call Me Back
+    callMeBackBtn.addEventListener('click', () => {
+      const slot = timeSlot.value;
+      history.push({
+        type: 'agent',
+        text: `We’ll call you back at your chosen time slot: <b>${slot}</b>.`,
+        time: Date.now()
+      });
+      saveHistory(history);
+      renderChat(history);
+      renderAudit(history);
+    });
+  </script>
+</body>
+</html>
