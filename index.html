@@ -74,6 +74,56 @@
       transition: var(--transition);
       animation: fadeIn 0.5s ease-out;
     }
+    /* Add improved UI layering */
+    .support-container {
+      position: relative;
+      z-index: 1;
+    }
+    
+    .feedback-modal {
+      z-index: 2000;
+    }
+    
+    .agent-banner {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: white;
+      border-bottom: 1px solid #e2e8f0;
+      margin-bottom: 1rem;
+      padding: 0.5rem;
+    }
+    
+    .always-human {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 1000;
+    }
+    
+    .chat-log {
+      position: relative;
+      z-index: 1;
+      overflow-y: auto;
+      max-height: calc(100vh - 300px);
+      padding: 1rem;
+      margin: 1rem 0;
+    }
+    
+    #namePrompt {
+      z-index: 1500;
+      background: white;
+      padding: 2rem;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+    }
+    
+    .call-back {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: #f8fafc;
+      border-radius: var(--border-radius);
+    }
     .always-human {
       position: fixed;
       bottom: 1.5rem;
@@ -559,7 +609,6 @@
 </head>
 <body>
   <div class="support-container" id="supportContainer">
-    <button class="exit-chat" id="exitChat">🚪 Exit Chat</button>
     <button class="calm-toggle" id="calmToggle" aria-label="Toggle Calm Mode">Calm Mode</button>
     <div class="progress" id="progress">Welcome to Revolut Customer Support</div>
 
@@ -632,24 +681,7 @@
     </button>
   </div>
   <button class="always-human" id="humanBtn">Connect with Human Agent</button>
-  <div class="feedback-modal" id="feedbackModal">
-    <div class="feedback-content">
-      <h2>Feedback</h2>
-      <p>We value your feedback! Please let us know how we did today.</p>
-      <div class="rating-buttons">
-        <button class="rating-btn" data-rating="1">⭐</button>
-        <button class="rating-btn" data-rating="2">⭐</button>
-        <button class="rating-btn" data-rating="3">⭐</button>
-        <button class="rating-btn" data-rating="4">⭐</button>
-        <button class="rating-btn" data-rating="5">⭐</button>
-      </div>
-      <input type="email" class="email-input" id="feedbackEmail" placeholder="Your email (optional)" aria-label="Your email" />
-      <div class="feedback-actions">
-        <button class="submit-feedback" id="submitFeedbackBtn">Submit Feedback</button>
-        <button class="cancel-feedback" id="cancelFeedbackBtn">Cancel</button>
-      </div>
-    </div>
-  </div>
+
   <script>
     // Clear localStorage on page load
     localStorage.removeItem('revolut_support_history');
@@ -918,11 +950,10 @@
     });
 
     // Exit chat and feedback handling
-    const exitChat = document.getElementById('exitChat');
-    // feedbackModal already declared above
-    const cancelFeedback = document.getElementById('cancelFeedback');
-    const submitFeedback = document.getElementById('submitFeedback');
-    const emailInput = document.getElementById('emailInput');
+    const exitChat = document.getElementById('exitChatBtn');
+    const cancelFeedback = document.getElementById('cancelFeedbackBtn');
+    const submitFeedback = document.getElementById('submitFeedbackBtn');
+    const emailInput = document.getElementById('feedbackEmail');
     let selectedRating = 0;
 
     exitChat.addEventListener('click', () => {
