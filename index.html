@@ -605,6 +605,31 @@
       max-width: 100%;
       margin-bottom: 1rem;
     }
+
+    .ticket-number {
+      background: #f8fafc;
+      padding: 0.8rem;
+      border-radius: var(--border-radius-sm);
+      margin: 1rem 0;
+      font-family: monospace;
+      text-align: center;
+      color: var(--accent);
+    }
+
+    .start-new-chat {
+      background: var(--accent);
+      color: white;
+      padding: 0.8rem 1.5rem;
+      border: none;
+      border-radius: var(--border-radius-sm);
+      cursor: pointer;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+
+    .start-new-chat:hover {
+      transform: scale(1.05);
+    }
   </style>
 </head>
 <body>
@@ -623,11 +648,15 @@
           <button class="rating-btn" data-rating="4">😊</button>
           <button class="rating-btn" data-rating="5">😍</button>
         </div>
-        <p>Would you like to receive a chat summary via email?</p>
+        <p>Would you like a copy of your chat history and acknowledgment ticket?</p>
         <input type="email" class="email-input" id="emailInput" placeholder="Enter your email (optional)" />
+        <div class="ticket-number"></div>
         <div class="feedback-actions">
-          <button class="cancel-feedback" id="cancelFeedback">Cancel</button>
-          <button class="submit-feedback" id="submitFeedback">Submit & Exit</button>
+          <button class="cancel-feedback" id="cancelFeedback">Continue Chat</button>
+          <button class="submit-feedback" id="submitFeedback">Submit & End Chat</button>
+        </div>
+        <div class="post-feedback-actions" style="display:none; text-align:center; margin-top:1rem;">
+          <button class="start-new-chat" id="startNewChat">Start New Chat</button>
         </div>
       </div>
     </div>
@@ -951,13 +980,22 @@
 
     // Exit chat and feedback handling
     const exitChat = document.getElementById('exitChatBtn');
-    const cancelFeedback = document.getElementById('cancelFeedbackBtn');
-    const submitFeedback = document.getElementById('submitFeedbackBtn');
-    const emailInput = document.getElementById('feedbackEmail');
+    const cancelFeedback = document.getElementById('cancelFeedback');
+    const submitFeedback = document.getElementById('submitFeedback');
+    const emailInput = document.getElementById('emailInput');
+    const startNewChat = document.getElementById('startNewChat');
     let selectedRating = 0;
+
+    // Generate a unique ticket number
+    function generateTicketNumber() {
+      const date = new Date();
+      const timestamp = date.getTime().toString().slice(-6);
+      return `REV-${timestamp}`;
+    }
 
     exitChat.addEventListener('click', () => {
       feedbackModal.style.display = 'flex';
+      document.querySelector('.ticket-number').textContent = `Your reference number: ${generateTicketNumber()}`;
     });
 
     cancelFeedback.addEventListener('click', () => {
@@ -975,23 +1013,56 @@
     submitFeedback.addEventListener('click', () => {
       const email = emailInput.value.trim();
       const history = loadHistory();
+      const ticketNumber = generateTicketNumber();
       
-      // Add feedback to chat history
+      // Add end chat message to history
       history.push({
         type: 'agent',
-        text: '🎯 Chat ended. Thank you for your feedback!',
-        time: Date.now()
+        text: `🎯 Thank you for contacting Revolut support!\n\nYour chat reference number: ${ticketNumber}\n\n${email ? 'We\'ll send your chat summary to ' + email : 'You can export your chat history using the button below'}`,
+        time: Date.now(),
+        isConfirmation: true
       });
       
       saveHistory(history);
       renderChat(history);
       renderAudit(history);
       
-      // Show confirmation message
-      showConfirmation('Thank you for your feedback!');
+      // Update feedback modal
+      document.querySelector('.feedback-actions').style.display = 'none';
+      document.querySelector('.post-feedback-actions').style.display = 'block';
+      document.querySelector('.rating-buttons').style.display = 'none';
+      document.querySelector('.email-input').style.display = 'none';
+      document.querySelector('.feedback-content h2').textContent = 'Thank You!';
+      document.querySelector('.feedback-content p').textContent = 
+        'Your feedback helps us improve our service. You can start a new chat or exit now.';
+    });
 
-      // Close feedback modal
+    // Start new chat handler
+    startNewChat.addEventListener('click', () => {
+      // Clear history and reset UI
+      localStorage.removeItem('revolut_support_history');
+      history = [];
+      saveHistory(history);
+      
+      // Reset feedback modal
       feedbackModal.style.display = 'none';
+      document.querySelector('.feedback-actions').style.display = 'flex';
+      document.querySelector('.post-feedback-actions').style.display = 'none';
+      document.querySelector('.rating-buttons').style.display = 'flex';
+      document.querySelector('.email-input').style.display = 'block';
+      document.querySelector('.feedback-content h2').textContent = 'Before You Go';
+      
+      // Show name prompt for new chat
+      namePrompt.style.display = 'block';
+      document.querySelectorAll('#chatForm, #callBack, #auditTrail, #humanBtn, #agentBanner').forEach(el => {
+        el.style.display = 'none';
+      });
+      
+      // Clear chat log
+      chatLog.innerHTML = '';
+      auditTrail.innerHTML = '';
+      userInput.value = '';
+      userName.value = '';
     });
 
     // Helper function for confirmation messages
